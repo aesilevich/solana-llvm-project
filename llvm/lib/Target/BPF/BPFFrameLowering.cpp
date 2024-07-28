@@ -59,6 +59,16 @@ void BPFFrameLowering::emitEpilogue(MachineFunction &MF,
   adjustStackPointer(MF, MBB, MBBI, BPF::ADD_ri);
 }
 
+StackOffset BPFFrameLowering::getFrameIndexReference(const MachineFunction &MF, int FI,
+                                                     Register &FrameReg) const {
+  const MachineFrameInfo &MFI = MF.getFrameInfo();
+  const TargetRegisterInfo *RI = MF.getSubtarget().getRegisterInfo();
+
+  FrameReg = RI->getFrameRegister(MF);
+
+  return StackOffset::getFixed(MFI.getObjectOffset(FI));
+}
+
 void BPFFrameLowering::determineCalleeSaves(MachineFunction &MF,
                                             BitVector &SavedRegs,
                                             RegScavenger *RS) const {
