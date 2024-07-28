@@ -248,6 +248,12 @@ bool ELFNote::Parse(const DataExtractor &data, lldb::offset_t *offset) {
   return true;
 }
 
+static uint32_t bpfVariantFromElfFlags(const elf::ELFHeader &header) {
+  if (header.e_flags & llvm::ELF::EF_SBF_V2)
+      return ArchSpec::eBPFSubType_sbfv2;
+  return ArchSpec::eBPFSubType_sbf;
+}
+
 static uint32_t sbfVariantFromElfFlags(const elf::ELFHeader &header) {
   if (header.e_flags & llvm::ELF::EF_SBF_V2)
       return ArchSpec::eSBFSubType_sbfv2;
@@ -349,7 +355,7 @@ static uint32_t subTypeFromElfHeader(const elf::ELFHeader &header) {
   else if (header.e_machine == llvm::ELF::EM_LOONGARCH)
     return loongarchVariantFromElfFlags(header);
   else if (header.e_machine == llvm::ELF::EM_BPF)
-    return sbfVariantFromElfFlags(header);
+    return bpfVariantFromElfFlags(header);
   else if (header.e_machine == llvm::ELF::EM_SBF)
     return sbfVariantFromElfFlags(header);
 
