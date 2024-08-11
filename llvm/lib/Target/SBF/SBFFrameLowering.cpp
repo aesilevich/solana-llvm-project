@@ -39,6 +39,16 @@ void adjustStackPointer(MachineFunction &MF, MachineBasicBlock &MBB,
 
 bool SBFFrameLowering::hasFP(const MachineFunction &MF) const { return true; }
 
+StackOffset SBFFrameLowering::getFrameIndexReference(const MachineFunction &MF, int FI,
+                                                     Register &FrameReg) const {
+  const MachineFrameInfo &MFI = MF.getFrameInfo();
+  const TargetRegisterInfo *RI = MF.getSubtarget().getRegisterInfo();
+
+  FrameReg = RI->getFrameRegister(MF);
+
+  return StackOffset::getFixed(MFI.getObjectOffset(FI));
+}
+
 void SBFFrameLowering::emitPrologue(MachineFunction &MF,
                                     MachineBasicBlock &MBB) const {
   if (!MF.getSubtarget<SBFSubtarget>().getHasDynamicFrames()) {
